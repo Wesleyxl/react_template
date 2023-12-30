@@ -13,5 +13,6 @@ export default createGlobalStyle`
     font-family: 'Quicksand', sans-serif;
     color: #000;
     background: #FFF;
+    padding: 65px 15px 15px 15px;
   }
 `;
