@@ -115,7 +115,7 @@ export default function Login() {
             }}
           />
           <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Lembrar-me" />
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+          <Button disabled={loading} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             {loading ? "Loading..." : "Login"}
           </Button>
           <Grid container>

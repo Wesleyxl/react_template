@@ -1,5 +1,6 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import LogoutIcon from "@mui/icons-material/Logout";
 import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
@@ -15,13 +16,14 @@ import {
   ListItemText,
   Typography,
   Toolbar,
+  Button,
 } from "@mui/material";
 import MuiAppBar, { type AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { styled, useTheme, type Theme, type CSSObject } from "@mui/material/styles";
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { isLogged } from "../services/auth";
+import { isLogged, logout } from "../services/auth";
 
 const drawerWidth = 220;
 
@@ -94,6 +96,12 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
   }),
 }));
 
+const signString = localStorage.getItem("sign");
+const signObject = signString ? JSON.parse(signString) : null;
+
+// Verifique se signObject não é nulo antes de acessar a propriedade "name"
+const nameUser = signObject ? signObject.name : null;
+
 export default function Header({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
@@ -109,7 +117,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
   return isLogged() ? (
     <Box sx={{ display: "flex" }}>
       <AppBar position="fixed" open={open}>
-        <Toolbar>
+        <Toolbar style={{ justifyContent: "space-between" }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -117,16 +125,28 @@ export default function Header({ children }: { children: React.ReactNode }) {
             edge="start"
             sx={{
               marginRight: 5,
-              ...(open && { display: "none" }),
+              ...(open && { opacity: 0 }),
             }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Mini variant drawer
-          </Typography>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Typography variant="h6" noWrap component="div" style={{ marginRight: 10 }}>
+              {nameUser}
+            </Typography>
+
+            <Button
+              style={{ color: "#FFF" }}
+              onClick={() => {
+                logout();
+              }}
+            >
+              <LogoutIcon style={{ marginRight: 10 }} /> Sair
+            </Button>
+          </div>
         </Toolbar>
       </AppBar>
+
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <p style={{ textAlign: "left" }}>Dashboard</p>
@@ -134,7 +154,9 @@ export default function Header({ children }: { children: React.ReactNode }) {
             {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
+
         <Divider />
+
         <List>
           <ListItem disablePadding sx={{ display: "block" }}>
             <Link to="/" rel="noopener noreferrer" style={{ textDecoration: "none", display: "flex" }}>
@@ -159,7 +181,9 @@ export default function Header({ children }: { children: React.ReactNode }) {
             </Link>
           </ListItem>
         </List>
+
         <Divider />
+
         <List>
           <ListItem disablePadding sx={{ display: "block" }}>
             <Link to="/inbox" rel="noopener noreferrer" style={{ textDecoration: "none", display: "flex" }}>
