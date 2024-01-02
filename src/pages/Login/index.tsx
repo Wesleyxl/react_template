@@ -49,7 +49,7 @@ export default function Login() {
       setLoading(false);
     } else {
       const response = await authRoutes.login(email, password);
-      if (response.status === "error") {
+      if (response === "Error") {
         console.log("error sim");
 
         setError(true);

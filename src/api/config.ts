@@ -1,7 +1,9 @@
 import axios from "axios";
 
 import { BASE_URL } from "../env";
-import { validateToken } from "../services/auth";
+import { validateToken, securels } from "../services/auth";
+
+// const ls = new SecureLS({ encodingType: "aes" });
 
 export const apiFetchPublicGet = async (endpoint: string) => {
   try {
@@ -19,7 +21,7 @@ export const apiFetchPublicGet = async (endpoint: string) => {
     // console.error("Erro na requisição:", error);
     // throw error;
 
-    return error.response.data;
+    return "Error";
   }
 };
 
@@ -38,7 +40,7 @@ export const apiFetchPublicPost = async (endpoint: string, body: any = {}) => {
   } catch (error: any) {
     // console.error("Erro na requisição:", error);
     // throw error;
-    return error.response.data;
+    return "Error";
   }
 };
 
@@ -48,7 +50,7 @@ export const apiFetchGet = async (endpoint: string) => {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        Authorization: `Bearer ${securels.get("access_token")}`,
       },
       timeoutErrorMessage: "Request timed out",
       timeout: 10000,
@@ -60,7 +62,7 @@ export const apiFetchGet = async (endpoint: string) => {
   } catch (error: any) {
     // console.error("Erro na requisição:", error);
     // throw error;
-    return error.response.data;
+    return "Error";
   }
 };
 
@@ -70,7 +72,7 @@ export const apiFetchPost = async (endpoint: string, body: any = {}) => {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        Authorization: `Bearer ${securels.get("access_token")}`,
       },
       timeoutErrorMessage: "Request timed out",
       timeout: 10000,
@@ -82,6 +84,6 @@ export const apiFetchPost = async (endpoint: string, body: any = {}) => {
   } catch (error: any) {
     // console.error("Erro na requisição:", error);
     // throw error;
-    return error.response.data;
+    return "Error";
   }
 };

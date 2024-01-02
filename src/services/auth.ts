@@ -1,4 +1,7 @@
+import SecureLS from "secure-ls";
+
 import { authRoute } from "../api/authRoutes";
+export const securels = new SecureLS({ encodingType: "aes" });
 
 /**
  * Checks if the user is logged in.
@@ -6,7 +9,7 @@ import { authRoute } from "../api/authRoutes";
  * @return {boolean} - True if the user is logged in, false otherwise.
  */
 export const isLogged = () => {
-  const response = localStorage.getItem("sign");
+  const response = securels.get("user");
 
   return !(response === null || response === undefined || response === "");
 };
@@ -20,20 +23,20 @@ export const isLogged = () => {
 export const validateToken = async (token: string | number) => {
   const isUnauthorized = token === "unauthorized" || token === 401;
   if (isUnauthorized) {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("sign");
+    securels.remove("access_token");
+    securels.remove("user");
   }
 };
 
 /**
- * Sets the access token and user sign in the local storage.
+ * Sets the access token and user data in local storage.
  *
  * @param {string} token - The access token.
- * @param {object} user - The user object containing email and name.
+ * @param {object} user - The user data containing email and name.
  */
 export const login = async (token: string, user: { email: string; name: string }) => {
-  localStorage.setItem("access_token", token);
-  localStorage.setItem("sign", JSON.stringify(user));
+  securels.set("access_token", token);
+  securels.set("user", user);
 };
 
 /**
@@ -42,11 +45,11 @@ export const login = async (token: string, user: { email: string; name: string }
  *
  * @return {void}
  */
-export const logout = () => {
-  authRoute.logout();
+export const logout = async () => {
+  await authRoute.logout();
 
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("sign");
+  securels.remove("access_token");
+  securels.remove("user");
 
   window.location.href = "/login";
 };

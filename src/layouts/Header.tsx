@@ -17,13 +17,15 @@ import {
   Typography,
   Toolbar,
   Button,
+  Chip,
+  Link as UiLink,
 } from "@mui/material";
 import MuiAppBar, { type AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { styled, useTheme, type Theme, type CSSObject } from "@mui/material/styles";
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { isLogged, logout } from "../services/auth";
+import { isLogged, logout, securels } from "../services/auth";
 
 const drawerWidth = 220;
 
@@ -96,11 +98,23 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
   }),
 }));
 
-const signString = localStorage.getItem("sign");
-const signObject = signString ? JSON.parse(signString) : null;
+const user = securels.get("user");
 
 // Verifique se signObject não é nulo antes de acessar a propriedade "name"
-const nameUser = signObject ? signObject.name : null;
+const nameUser = user ? user.name : null;
+
+function Copyright(props: any) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {"Copyright © "}
+      <UiLink color="inherit" href="https://wesley-alves.com/">
+        Wesley Alves
+      </UiLink>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
 
 export default function Header({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
@@ -114,103 +128,106 @@ export default function Header({ children }: { children: React.ReactNode }) {
     setOpen(false);
   };
 
-  return isLogged() ? (
-    <Box sx={{ display: "flex" }}>
-      <AppBar position="fixed" open={open}>
-        <Toolbar style={{ justifyContent: "space-between" }}>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              marginRight: 5,
-              ...(open && { opacity: 0 }),
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Typography variant="h6" noWrap component="div" style={{ marginRight: 10 }}>
-              {nameUser}
-            </Typography>
+  const handleLogout = async () => {
+    await logout();
+  };
 
-            <Button
-              style={{ color: "#FFF" }}
-              onClick={() => {
-                logout();
+  return isLogged() ? (
+    <>
+      <Box sx={{ display: "flex" }}>
+        <AppBar position="fixed" open={open}>
+          <Toolbar style={{ justifyContent: "space-between" }}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              sx={{
+                marginRight: 5,
+                ...(open && { opacity: 0 }),
               }}
             >
-              <LogoutIcon style={{ marginRight: 10 }} /> Sair
-            </Button>
-          </div>
-        </Toolbar>
-      </AppBar>
+              <MenuIcon />
+            </IconButton>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Chip label="Admin" color="success" variant="outlined" />
+              <Typography variant="h6" noWrap component="div" style={{ margin: "0 20px" }}>
+                {nameUser}
+              </Typography>
 
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <p style={{ textAlign: "left" }}>Dashboard</p>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
-        </DrawerHeader>
+              <Button style={{ color: "#FFF" }} onClick={handleLogout}>
+                <LogoutIcon style={{ marginRight: 10 }} /> Sair
+              </Button>
+            </div>
+          </Toolbar>
+        </AppBar>
 
-        <Divider />
+        <Drawer variant="permanent" open={open}>
+          <DrawerHeader>
+            <p style={{ textAlign: "left" }}>Dashboard</p>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            </IconButton>
+          </DrawerHeader>
 
-        <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
-            <Link to="/" rel="noopener noreferrer" style={{ textDecoration: "none", display: "flex" }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
+          <Divider />
+
+          <List>
+            <ListItem disablePadding sx={{ display: "block" }}>
+              <Link to="/" rel="noopener noreferrer" style={{ textDecoration: "none", display: "flex" }}>
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
                   }}
                 >
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </Link>
-          </ListItem>
-        </List>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <InboxIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+          </List>
 
-        <Divider />
+          <Divider />
 
-        <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
-            <Link to="/inbox" rel="noopener noreferrer" style={{ textDecoration: "none", display: "flex" }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
+          <List>
+            <ListItem disablePadding sx={{ display: "block" }}>
+              <Link to="/inbox" rel="noopener noreferrer" style={{ textDecoration: "none", display: "flex" }}>
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
                   }}
                 >
-                  <MailIcon />
-                </ListItemIcon>
-                <ListItemText primary="Inbox" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </Link>
-          </ListItem>
-        </List>
-      </Drawer>
-      {children}
-    </Box>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <MailIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Inbox" sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+          </List>
+        </Drawer>
+        {children}
+      </Box>
+      <Copyright />
+    </>
   ) : (
     <> {children}</>
   );
