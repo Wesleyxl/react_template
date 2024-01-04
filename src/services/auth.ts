@@ -25,6 +25,8 @@ export const validateToken = async (token: string | number) => {
   if (isUnauthorized) {
     securels.remove("access_token");
     securels.remove("user");
+
+    window.location.href = "/login";
   }
 };
 
